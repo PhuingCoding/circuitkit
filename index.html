@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CircuitKit — Electronics Tools</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #090c10;
+      --bg2: #0f1520;
+      --bg3: #141b28;
+      --green: #00d4ff;
+      --green-dim: #0099cc;
+      --green-dark: #00263d;
+      --text: #cce6f0;
+      --text-muted: #4a7a99;
+      --border: #1a2c3d;
+      --mono: 'JetBrains Mono', monospace;
+      --display: 'Syne', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+    }
+
+    /* NAV */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--green);
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--text); }
+
+    nav ul {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    nav ul a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    nav ul a:hover { color: var(--green); }
+
+    /* HERO */
+    .hero {
+      padding: 5rem 2rem 4rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green);
+      border: 1px solid var(--green-dark);
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-family: var(--display);
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 em {
+      color: var(--green);
+      font-style: normal;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      max-width: 520px;
+    }
+
+    /* TOOLS SECTION */
+    .tools-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 2rem 6rem;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* TOOL CARD */
+    .tool-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tool-card h2 {
+      font-family: var(--display);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .tool-card .tool-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    /* FORMULA DISPLAY */
+    .formula {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      padding: 0.8rem 1.2rem;
+      font-size: 0.85rem;
+      color: var(--green);
+      margin-bottom: 2rem;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* SOLVE SELECTOR */
+    .solve-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .solve-btns {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .solve-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      padding: 0.45rem 1rem;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.15s;
+      letter-spacing: 0.04em;
+    }
+
+    .solve-btn:hover { border-color: var(--green-dim); color: var(--text); }
+    .solve-btn.active {
+      background: var(--green-dark);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    /* INPUTS */
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .input-group .input-wrap {
+      position: relative;
+    }
+
+    .input-group input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      padding: 0.65rem 3rem 0.65rem 0.9rem;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .input-group input:focus { border-color: var(--green-dim); }
+
+    .input-group input:disabled {
+      background: var(--green-dark);
+      border-color: var(--green);
+      color: var(--green);
+      cursor: not-allowed;
+      opacity: 0.8;
+    }
+
+    .input-group .unit {
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* CALCULATE BUTTON */
+    .calc-btn {
+      background: var(--green);
+      color: #000;
+      border: none;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.8rem 2rem;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .calc-btn:hover { opacity: 0.88; }
+    .calc-btn:active { transform: scale(0.98); }
+
+    /* RESULT */
+    .result-box {
+      margin-top: 1.5rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      border-radius: 0 2px 2px 0;
+      padding: 1.2rem 1.5rem;
+      display: none;
+    }
+
+    .result-box.visible { display: block; }
+
+    .result-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .result-value {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .result-unit {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-left: 0.3rem;
+    }
+
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 0.82rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+
+    /* COMING SOON GRID */
+    .coming-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+
+    .coming-card {
+      background: var(--bg2);
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+      padding: 1.2rem;
+      opacity: 0.6;
+    }
+
+    .coming-card h3 {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+
+    .coming-card p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.5rem;
+      border-radius: 2px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    footer span { color: var(--green); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="#">Circuit<span>Kit</span></a>
+    <ul>
+      <li><a href="#tools">Tools</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-tag">Electronics Toolkit</div>
+    <h1>Tools for people who <em>build things.</em></h1>
+    <p>Free, fast, no sign-up. Just the calculators and references you need when you're deep in a circuit and don't have time to waste.</p>
+  </section>
+
+  <section class="tools-section" id="tools">
+    <div class="section-label">Available tools</div>
+
+    <!-- OHM'S LAW CALCULATOR -->
+    <div class="tool-card">
+      <h2>Ohm's Law Calculator</h2>
+      <p class="tool-desc">Enter any two values — the third is solved for you.</p>
+
+      <div class="formula">V = I × R &nbsp;|&nbsp; I = V / R &nbsp;|&nbsp; R = V / I</div>
+
+      <div class="solve-label">Solve for</div>
+      <div class="solve-btns">
+        <button class="solve-btn active" data-solve="V" onclick="setSolve('V')">Voltage (V)</button>
+        <button class="solve-btn" data-solve="I" onclick="setSolve('I')">Current (I)</button>
+        <button class="solve-btn" data-solve="R" onclick="setSolve('R')">Resistance (R)</button>
+      </div>
+
+      <div class="inputs-grid">
+        <div class="input-group" id="group-V">
+          <label>Voltage</label>
+          <div class="input-wrap">
+            <input type="number" id="inp-V" placeholder="?" step="any" />
+            <span class="unit">V</span>
+          </div>
+        </div>
+        <div class="input-group" id="group-I">
+          <label>Current</label>
+          <div class="input-wrap">
+            <input type="number" id="inp-I" placeholder="e.g. 0.02" step="any" />
+            <span class="unit">A</span>
+          </div>
+        </div>
+        <div class="input-group" id="group-R">
+          <label>Resistance</label>
+          <div class="input-wrap">
+            <input type="number" id="inp-R" placeholder="e.g. 220" step="any" />
+            <span class="unit">Ω</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="calc-btn" onclick="calculate()">Calculate</button>
+
+      <p class="error-msg" id="error-msg">Please fill in both values.</p>
+
+      <div class="result-box" id="result-box">
+        <div class="result-label" id="result-label">Result</div>
+        <div>
+          <span class="result-value" id="result-value">—</span>
+          <span class="result-unit" id="result-unit"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMING SOON -->
+    <div class="section-label" style="margin-top: 3rem;">Coming soon</div>
+    <div class="coming-grid">
+      <div class="coming-card">
+        <div class="badge">Soon</div>
+        <h3>LED Resistor Calc</h3>
+        <p>Find the right resistor for your LED.</p>
+      </div>
+      <div class="coming-card">
+        <div class="badge">Soon</div>
+        <h3>Resistor Color Code</h3>
+        <p>Read color bands, get resistance.</p>
+      </div>
+      <div class="coming-card">
+        <div class="badge">Soon</div>
+        <h3>Voltage Divider</h3>
+        <p>Calculate output voltage from two resistors.</p>
+      </div>
+      <div class="coming-card">
+        <div class="badge">Soon</div>
+        <h3>Series & Parallel R</h3>
+        <p>Combine resistors, get total resistance.</p>
+      </div>
+      <div class="coming-card">
+        <div class="badge">Soon</div>
+        <h3>Battery Life Estimator</h3>
+        <p>mAh ÷ current draw = hours.</p>
+      </div>
+      <div class="coming-card">
+        <div class="badge">Soon</div>
+        <h3>Power Calculator</h3>
+        <p>P = IV — solve for any variable.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <footer>
+    Built with purpose by <span>CircuitKit</span> — free tools for electronics enthusiasts.
+  </footer>
+
+  <script>
+    let solving = 'V';
+
+    function setSolve(target) {
+      solving = target;
+      document.querySelectorAll('.solve-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(`[data-solve="${target}"]`).classList.add('active');
+
+      ['V', 'I', 'R'].forEach(id => {
+        const inp = document.getElementById('inp-' + id);
+        if (id === target) {
+          inp.value = '';
+          inp.placeholder = '?';
+          inp.disabled = true;
+        } else {
+          inp.disabled = false;
+          inp.placeholder = id === 'I' ? 'e.g. 0.02' : id === 'R' ? 'e.g. 220' : 'e.g. 5';
+        }
+      });
+
+      hideResult();
+    }
+
+    function calculate() {
+      const V = parseFloat(document.getElementById('inp-V').value);
+      const I = parseFloat(document.getElementById('inp-I').value);
+      const R = parseFloat(document.getElementById('inp-R').value);
+      const err = document.getElementById('error-msg');
+      const box = document.getElementById('result-box');
+
+      err.classList.remove('visible');
+      box.classList.remove('visible');
+
+      let result, label, unit;
+
+      if (solving === 'V') {
+        if (isNaN(I) || isNaN(R)) { err.classList.add('visible'); return; }
+        result = I * R;
+        label = 'Voltage'; unit = 'V';
+      } else if (solving === 'I') {
+        if (isNaN(V) || isNaN(R) || R === 0) { err.classList.add('visible'); return; }
+        result = V / R;
+        label = 'Current'; unit = 'A';
+      } else {
+        if (isNaN(V) || isNaN(I) || I === 0) { err.classList.add('visible'); return; }
+        result = V / I;
+        label = 'Resistance'; unit = 'Ω';
+      }
+
+      document.getElementById('result-label').textContent = label;
+      document.getElementById('result-value').textContent = +result.toPrecision(4);
+      document.getElementById('result-unit').textContent = unit;
+      box.classList.add('visible');
+    }
+
+    function hideResult() {
+      document.getElementById('result-box').classList.remove('visible');
+      document.getElementById('error-msg').classList.remove('visible');
+    }
+
+    setSolve('V');
+  </script>
+
+</body>
+</html>
