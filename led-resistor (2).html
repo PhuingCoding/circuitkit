@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LED Resistor Calculator — CircuitKit</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #090c10;
+      --bg2: #0f1520;
+      --bg3: #141b28;
+      --cyan: #00d4ff;
+      --cyan-dim: #0099cc;
+      --cyan-dark: #00263d;
+      --text: #cce6f0;
+      --text-muted: #4a7a99;
+      --border: #1a2c3d;
+      --mono: 'JetBrains Mono', monospace;
+      --display: 'Syne', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 100;
+    }
+
+    .logo {
+      font-family: var(--display);
+      font-weight: 800;
+      font-size: 1.3rem;
+      color: var(--cyan);
+      letter-spacing: -0.02em;
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--text); }
+    nav ul { display: flex; gap: 2rem; list-style: none; }
+    nav ul a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    nav ul a:hover { color: var(--cyan); }
+
+    .hero {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 5rem 2rem 3.5rem;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      border: 1px solid var(--cyan-dark);
+      padding: 0.3rem 0.8rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-family: var(--display);
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: #fff;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 em { color: var(--cyan); font-style: normal; }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      max-width: 520px;
+    }
+
+    .tools-section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem 2rem 6rem;
+    }
+
+    .coming-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .coming-card {
+      background: var(--bg2);
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+      padding: 1.2rem;
+      opacity: 0.6;
+    }
+
+    .coming-card h3 {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+
+    .coming-card p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.15rem 0.5rem;
+      border-radius: 2px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .tool-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tool-card h2 {
+      font-family: var(--display);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .tool-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .formula {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+      padding: 0.8rem 1.2rem;
+      font-size: 0.85rem;
+      color: var(--cyan);
+      margin-bottom: 2rem;
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* LED COLOR PRESETS */
+    .preset-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .preset-btns {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .preset-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 0.4rem 0.9rem;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preset-btn:hover { border-color: var(--cyan-dim); color: var(--text); }
+    .preset-btn.active { background: var(--cyan-dark); border-color: var(--cyan); color: var(--cyan); }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* INPUTS */
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .input-group .hint {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+      opacity: 0.7;
+    }
+
+    .input-wrap { position: relative; }
+
+    .input-wrap input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      padding: 0.65rem 3rem 0.65rem 0.9rem;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .input-wrap input:focus { border-color: var(--cyan-dim); }
+
+    .input-wrap .unit {
+      position: absolute;
+      right: 0.8rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .calc-btn {
+      background: var(--cyan);
+      color: #000;
+      border: none;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.8rem 2rem;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .calc-btn:hover { opacity: 0.88; }
+    .calc-btn:active { transform: scale(0.98); }
+
+    /* RESULT */
+    .result-box {
+      margin-top: 1.5rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+      border-radius: 0 2px 2px 0;
+      padding: 1.2rem 1.5rem;
+      display: none;
+    }
+
+    .result-box.visible { display: block; }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+
+    .result-item {}
+
+    .result-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .result-value {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--cyan);
+    }
+
+    .result-unit {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-left: 0.2rem;
+    }
+
+    .result-note {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .result-note strong { color: var(--cyan); font-weight: 600; }
+
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 0.82rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    footer span { color: var(--cyan); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">Circuit<span>Kit</span></a>
+    <ul>
+      <li><a href="index.html">← All Tools</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-tag">Electronics Toolkit</div>
+    <h1>LED <em>Resistor</em> Calculator</h1>
+    <p>Find the correct resistor to protect your LED from burning out. Enter your voltages and current — we'll do the math.</p>
+  </section>
+
+  <section class="tools-section">
+    <div class="section-label">Tool</div>
+
+    <div class="tool-card">
+      <h2>LED Resistor Calculator</h2>
+      <p class="tool-desc">Find the correct resistor to protect your LED from burning out.</p>
+
+      <div class="formula">R = (Vs − Vf) / If</div>
+
+      <div class="preset-label">Quick select LED color</div>
+      <div class="preset-btns">
+        <button class="preset-btn" onclick="setPreset(2.0, 'red')" data-color="red">
+          <span class="dot" style="background:#ff3b3b;"></span> Red
+        </button>
+        <button class="preset-btn" onclick="setPreset(2.1, 'orange')" data-color="orange">
+          <span class="dot" style="background:#ff8c00;"></span> Orange
+        </button>
+        <button class="preset-btn" onclick="setPreset(2.1, 'yellow')" data-color="yellow">
+          <span class="dot" style="background:#ffd700;"></span> Yellow
+        </button>
+        <button class="preset-btn" onclick="setPreset(2.2, 'green')" data-color="green">
+          <span class="dot" style="background:#00c853;"></span> Green
+        </button>
+        <button class="preset-btn" onclick="setPreset(3.2, 'blue')" data-color="blue">
+          <span class="dot" style="background:#2979ff;"></span> Blue
+        </button>
+        <button class="preset-btn" onclick="setPreset(3.2, 'white')" data-color="white">
+          <span class="dot" style="background:#ffffff; border: 1px solid #333;"></span> White
+        </button>
+      </div>
+
+      <div class="inputs-grid">
+        <div class="input-group">
+          <label>Supply Voltage (Vs)</label>
+          <div class="input-wrap">
+            <input type="number" id="inp-vs" placeholder="e.g. 5" step="any" />
+            <span class="unit">V</span>
+          </div>
+          <div class="hint">Your power source — Arduino = 5V, Li-Po = 3.7V</div>
+        </div>
+        <div class="input-group">
+          <label>LED Forward Voltage (Vf)</label>
+          <div class="input-wrap">
+            <input type="number" id="inp-vf" placeholder="e.g. 2.0" step="any" />
+            <span class="unit">V</span>
+          </div>
+          <div class="hint">Check datasheet, or use a color preset above</div>
+        </div>
+        <div class="input-group">
+          <label>LED Current (If)</label>
+          <div class="input-wrap">
+            <input type="number" id="inp-if" placeholder="e.g. 20" step="any" value="20" />
+            <span class="unit">mA</span>
+          </div>
+          <div class="hint">Most LEDs run at 20mA. Leave this unless you know otherwise.</div>
+        </div>
+      </div>
+
+      <button class="calc-btn" onclick="calculate()">Calculate</button>
+
+      <p class="error-msg" id="error-msg">Please fill in all values. Make sure Vs is greater than Vf.</p>
+
+      <div class="result-box" id="result-box">
+        <div class="result-grid">
+          <div class="result-item">
+            <div class="result-label">Resistor needed</div>
+            <div>
+              <span class="result-value" id="result-exact">—</span>
+              <span class="result-unit">Ω</span>
+            </div>
+          </div>
+          <div class="result-item">
+            <div class="result-label">Nearest standard value</div>
+            <div>
+              <span class="result-value" id="result-standard">—</span>
+              <span class="result-unit">Ω</span>
+            </div>
+          </div>
+        </div>
+        <div class="result-note" id="result-note"></div>
+      </div>
+
+    </div>
+    <div class="section-label" style="margin-top: 3rem;">Coming soon</div>
+    <div class="coming-grid">
+      <div class="coming-card"><div class="badge">Soon</div><h3>Resistor Color Code</h3><p>Read color bands, get resistance.</p></div>
+      <div class="coming-card"><div class="badge">Soon</div><h3>Voltage Divider</h3><p>Calculate output voltage from two resistors.</p></div>
+      <div class="coming-card"><div class="badge">Soon</div><h3>Series & Parallel R</h3><p>Combine resistors, get total resistance.</p></div>
+      <div class="coming-card"><div class="badge">Soon</div><h3>Battery Life Estimator</h3><p>mAh ÷ current draw = hours.</p></div>
+      <div class="coming-card"><div class="badge">Soon</div><h3>Power Calculator</h3><p>P = IV — solve for any variable.</p></div>
+      <div class="coming-card"><div class="badge">Soon</div><h3>RC Charge Time</h3><p>Capacitor charge/discharge timing.</p></div>
+      <div class="coming-card"><div class="badge">Soon</div><h3>PWM Calculator</h3><p>Duty cycle and frequency for PWM signals.</p></div>
+      <div class="coming-card"><div class="badge">Soon</div><h3>Unit Converter</h3><p>mA↔A, µF↔F, kΩ↔Ω and more.</p></div>
+    </div>
+
+  </section>
+
+  <footer>
+    Built with purpose by <span>CircuitKit</span> — free tools for electronics enthusiasts.
+  </footer>
+
+  <script>
+    const E12 = [10,12,15,18,22,27,33,39,47,56,68,82];
+
+    function nearestE12(val) {
+      let best = null, bestDiff = Infinity;
+      for (let decade = 1; decade <= 100000; decade *= 10) {
+        for (const base of E12) {
+          const v = base * decade;
+          const diff = Math.abs(v - val);
+          if (diff < bestDiff) { bestDiff = diff; best = v; }
+        }
+      }
+      return best;
+    }
+
+    function setPreset(vf, color) {
+      document.getElementById('inp-vf').value = vf;
+      document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector(`[data-color="${color}"]`).classList.add('active');
+      hideResult();
+    }
+
+    function calculate() {
+      const Vs = parseFloat(document.getElementById('inp-vs').value);
+      const Vf = parseFloat(document.getElementById('inp-vf').value);
+      const If = parseFloat(document.getElementById('inp-if').value);
+      const err = document.getElementById('error-msg');
+      const box = document.getElementById('result-box');
+
+      err.classList.remove('visible');
+      box.classList.remove('visible');
+
+      if (isNaN(Vs) || isNaN(Vf) || isNaN(If) || Vs <= Vf || If <= 0) {
+        err.classList.add('visible');
+        return;
+      }
+
+      const R = (Vs - Vf) / (If / 1000);
+      const standard = nearestE12(R);
+
+      document.getElementById('result-exact').textContent = Math.round(R);
+      document.getElementById('result-standard').textContent = standard;
+
+      const actualCurrent = ((Vs - Vf) / standard * 1000).toFixed(1);
+      document.getElementById('result-note').innerHTML =
+        `Use a <strong>${standard}Ω</strong> resistor (nearest E12 standard value). ` +
+        `At this value, actual current through the LED will be <strong>${actualCurrent}mA</strong> — safe for most LEDs.`;
+
+      box.classList.add('visible');
+    }
+
+    function hideResult() {
+      document.getElementById('result-box').classList.remove('visible');
+      document.getElementById('error-msg').classList.remove('visible');
+    }
+  </script>
+
+</body>
+</html>
